@@ -1,14 +1,16 @@
-# OpenDroneMap
+# ODM
 
 ![](https://raw.githubusercontent.com/OpenDroneMap/OpenDroneMap/master/img/odm_image.png)
 
 ## What is it?
 
-OpenDroneMap is an open source toolkit for processing aerial drone imagery. Typical drones use simple point-and-shoot cameras, so the images from drones, while from a different perspective, are similar to any pictures taken from point-and-shoot cameras, i.e. non-metric imagery. OpenDroneMap turns those simple images into three dimensional geographic data that can be used in combination with other geographic datasets.
+ODM is an open source command line toolkit for processing aerial drone imagery. Typical drones use simple point-and-shoot cameras, so the images from drones, while from a different perspective, are similar to any pictures taken from point-and-shoot cameras, i.e. non-metric imagery. OpenDroneMap turns those simple images into three dimensional geographic data that can be used in combination with other geographic datasets.
+
+If you want a graphical user interface for it, check out [WebODM](https://github.com/OpenDroneMap/WebODM)
 
 ![](https://raw.githubusercontent.com/OpenDroneMap/OpenDroneMap/master/img/tol_ptcloud.png)
 
-In a word, OpenDroneMap is a toolchain for processing raw civilian UAS imagery to other useful products. What kind of products?
+In a word, ODM is a toolchain for processing raw civilian UAS imagery to other useful products. What kind of products?
 
 1. Point Clouds
 2. Digital Surface Models
@@ -18,7 +20,9 @@ In a word, OpenDroneMap is a toolchain for processing raw civilian UAS imagery t
 6. Digital Elevation Models
 7. etc.
 
-Open Drone Map now includes state-of-the-art 3D reconstruction work by Michael Waechter, Nils Moehrle, and Michael Goesele. See their publication at [http://www.gcc.tu-darmstadt.de/media/gcc/papers/Waechter-2014-LTB.pdf](http://www.gcc.tu-darmstadt.de/media/gcc/papers/Waechter-2014-LTB.pdf).
+ODM now includes state-of-the-art 3D reconstruction work by Michael Waechter, Nils Moehrle, and Michael Goesele. See their publication at [http://www.gcc.tu-darmstadt.de/media/gcc/papers/Waechter-2014-LTB.pdf](http://www.gcc.tu-darmstadt.de/media/gcc/papers/Waechter-2014-LTB.pdf).
+
+For Docs, see Quickstart below and also https://docs.opendronemap.org
 
 ## QUICKSTART
 
@@ -30,7 +34,11 @@ instructions through "Create a Docker group". The Docker image workflow
 has equivalent procedures for Mac OS X and Windows found at [docs.docker.com](docs.docker.com). Then run the following command which will build a pre-built image and run on images found in `$(pwd)/images` (you can change this if you need to, see the [wiki](https://github.com/OpenDroneMap/OpenDroneMap/wiki/Docker) for more detailed instructions.
 
 ```
-docker run -it --rm -v $(pwd)/images:/code/images -v $(pwd)/odm_orthophoto:/code/odm_orthophoto -v $(pwd)/odm_texturing:/code/odm_texturing opendronemap/opendronemap
+docker run -it --rm \
+    -v "$(pwd)/images:/code/images" \
+    -v "$(pwd)/odm_orthophoto:/code/odm_orthophoto" \
+    -v "$(pwd)/odm_texturing:/code/odm_texturing" \
+    opendronemap/opendronemap
 ```
 
 ### Native Install (Ubuntu 16.04)
@@ -101,7 +109,7 @@ or
 
     python run.py --rerun-from odm_meshing project-name
 
-The options for rerunning are: 'resize', 'opensfm', 'slam', 'cmvs', 'pmvs', 'odm_meshing', 'mvs_texturing', 'odm_georeferencing', 'odm_orthophoto'
+The options for rerunning are: 'resize', 'opensfm', 'slam', 'smvs', 'odm_meshing', 'mvs_texturing', 'odm_georeferencing', 'odm_orthophoto'
 
 ### View Results
 
@@ -126,7 +134,7 @@ When the process finishes, the results will be organized as follows:
         |-- texture_N.jpg                   # Associated textured images used by the model
     |-- odm_georeferencing/
         |-- odm_georeferenced_model.ply     # A georeferenced dense point cloud
-        |-- odm_georeferenced_model.ply.laz # LAZ format point cloud
+        |-- odm_georeferenced_model.laz     # LAZ format point cloud
         |-- odm_georeferenced_model.csv     # XYZ format point cloud
         |-- odm_georeferencing_log.txt      # Georeferencing log
         |-- odm_georeferencing_transform.txt# Transform used for georeferencing
@@ -147,7 +155,7 @@ You can also view the orthophoto GeoTIFF in [QGIS](http://www.qgis.org/) or othe
 
 ## Build and Run Using Docker
 
-(Instructions below apply to Ubuntu 14.04, but the Docker image workflow 
+(Instructions below apply to Ubuntu 14.04, but the Docker image workflow
 has equivalent procedures for Mac OS X and Windows. See [docs.docker.com](https://docs.docker.com/))
 
 OpenDroneMap is Dockerized, meaning you can use containerization to build and run it without tampering with the configuration of libraries and packages already
@@ -155,32 +163,61 @@ installed on your machine. Docker software is free to install and use in this co
 see the [Docker Ubuntu installation tutorial](https://docs.docker.com/engine/installation/linux/ubuntulinux/) and follow the
 instructions through "Create a Docker group". Once Docker is installed, the fastest way to use OpenDroneMap is to run a pre-built image by typing:
 
-    docker run -it --rm -v $(pwd)/images:/code/images -v $(pwd)/odm_orthophoto:/code/odm_orthophoto -v $(pwd)/odm_texturing:/code/odm_texturing opendronemap/opendronemap
+    docker run -it --rm \
+        -v "$(pwd)/images:/code/images" \
+        -v "$(pwd)/odm_orthophoto:/code/odm_orthophoto" \
+        -v "$(pwd)/odm_texturing:/code/odm_texturing" \
+        opendronemap/opendronemap
 
 If you want to build your own Docker image from sources, type:
 
-    docker build -t my_odm_image .
-    docker run -it --rm -v $(pwd)/images:/code/images -v $(pwd)/odm_orthophoto:/code/odm_orthophoto -v $(pwd)/odm_texturing:/code/odm_texturing my_odm_image
+    docker build -t my_odm_image --no-cache .
+    docker run -it --rm \
+        -v "$(pwd)/images:/code/images" \
+        -v "$(pwd)/odm_orthophoto:/code/odm_orthophoto" \
+        -v "$(pwd)/odm_texturing:/code/odm_texturing" \
+        my_odm_image
 
 Using this method, the containerized ODM will process the images in the OpenDroneMap/images directory and output results
 to the OpenDroneMap/odm_orthophoto and OpenDroneMap/odm_texturing directories as described in the [Viewing Results](https://github.com/OpenDroneMap/OpenDroneMap/wiki/Output-and-Results) section.
 If you want to view other results outside the Docker image simply add which directories you're interested in to the run command in the same pattern
-established above. For example, if you're interested in the dense cloud results generated by PMVS and in the orthophoto,
+established above. For example, if you're interested in the dense cloud results generated by OpenSfM and in the orthophoto,
 simply use the following `docker run` command after building the image:
 
-    docker run -it --rm -v $(pwd)/images:/code/images -v $(pwd)/odm_georeferencing:/code/odm_georeferencing -v $(pwd)/odm_orthophoto:/code/odm_orthophoto my_odm_image
+    docker run -it --rm \
+        -v "$(pwd)/images:/code/images" \
+        -v "$(pwd)/odm_georeferencing:/code/odm_georeferencing" \
+        -v "$(pwd)/odm_orthophoto:/code/odm_orthophoto" \
+        my_odm_image
 
 If you want to get all intermediate outputs, run the following command:
 
-    docker run -it --rm -v $(pwd)/images:/code/images -v $(pwd)/odm_georeferencing:/code/odm_georeferencing -v $(pwd)/odm_meshing:/code/odm_meshing -v $(pwd)/odm_orthophoto:/code/odm_orthophoto -v $(pwd)/odm_texturing:/code/odm_texturing -v $(pwd)/opensfm:/code/opensfm -v $(pwd)/pmvs:/code/pmvs opendronemap/opendronemap
+    docker run -it --rm \
+        -v "$(pwd)/images:/code/images" \
+        -v "$(pwd)/odm_georeferencing:/code/odm_georeferencing" \
+        -v "$(pwd)/odm_meshing:/code/odm_meshing" \
+        -v "$(pwd)/odm_orthophoto:/code/odm_orthophoto" \
+        -v "$(pwd)/odm_texturing:/code/odm_texturing" \
+        -v "$(pwd)/opensfm:/code/opensfm" \
+        -v "$(pwd)/smvs:/code/smvs" \
+        opendronemap/opendronemap
 
 To pass in custom parameters to the run.py script, simply pass it as arguments to the `docker run` command. For example:
 
-    docker run -it --rm -v $(pwd)/images:/code/images v $(pwd)/odm_orthophoto:/code/odm_orthophoto -v $(pwd)/odm_texturing:/code/odm_texturing opendronemap/opendronemap --resize-to 1800 --force-ccd 6.16
+    docker run -it --rm \
+        -v "$(pwd)/images:/code/images" \
+        -v "$(pwd)/odm_orthophoto:/code/odm_orthophoto" \
+        -v "$(pwd)/odm_texturing:/code/odm_texturing" \
+        opendronemap/opendronemap --resize-to 1800 --force-ccd 6.16
 
 If you want to pass in custom parameters using the settings.yaml file, you can pass it as a -v volume binding:
 
-    docker run -it --rm -v $(pwd)/images:/code/images v $(pwd)/odm_orthophoto:/code/odm_orthophoto -v $(pwd)/odm_texturing:/code/odm_texturing -v $(pwd)/settings.yaml:/code/settings.yaml opendronemap/opendronemap
+    docker run -it --rm \
+        -v "$(pwd)/images:/code/images" \
+        -v "$(pwd)/odm_orthophoto:/code/odm_orthophoto" \
+        -v "$(pwd)/odm_texturing:/code/odm_texturing" \
+        -v "$(pwd)/settings.yaml:/code/settings.yaml" \
+        opendronemap/opendronemap
 
 When building your own Docker image, if image size is of importance to you, you should use the ```--squash``` flag, like so:
 
@@ -189,7 +226,7 @@ When building your own Docker image, if image size is of importance to you, you 
 This will clean up intermediate steps in the Docker build process, resulting in a significantly smaller image (about half the size).
 
 Experimental flags need to be enabled in Docker to use the ```--squash``` flag. To enable this, insert the following into the file ```/etc/docker/daemon.json```:
-    
+
     {
         "experimental": true
     }
@@ -203,7 +240,7 @@ A web interface and API to OpenDroneMap is currently under active development in
 
 ## Video Support
 
-Currently we have an experimental feature that uses ORB_SLAM to render a textured mesh from video. It is only supported on Ubuntu 14.04 on machines with X11 support. See the [wiki](https://github.com/OpenDroneMap/OpenDroneMap/wiki/Reconstruction-from-Video)for details on installation and use.
+Currently we have an experimental feature that uses ORB_SLAM to render a textured mesh from video. It is only supported on Ubuntu 14.04 on machines with X11 support. See the [wiki](https://github.com/OpenDroneMap/OpenDroneMap/wiki/Reconstruction-from-Video) for details on installation and use.
 
 ## Examples
 
@@ -211,7 +248,7 @@ Coming soon...
 
 ## Documentation:
 
-For documentation, everything is being moved to [http://docs.opendronemap.org/](http://docs.opendronemap.org/) but you can also take a look at our [wiki](https://github.com/OpenDroneMap/OpenDroneMap/wiki). Check those places first if you are having problems. There's also help at [community forum](http://community.opendronemap.org/), and if you still need help and think you've found a bug or need an enhancement, look through the issue queue or create one. 
+For documentation, everything is being moved to [http://docs.opendronemap.org/](http://docs.opendronemap.org/) but you can also take a look at our [wiki](https://github.com/OpenDroneMap/OpenDroneMap/wiki). Check those places first if you are having problems. There's also help at [community forum](http://community.opendronemap.org/), and if you still need help and think you've found a bug or need an enhancement, look through the issue queue or create one.
 
 ## Developers
 
